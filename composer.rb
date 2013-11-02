@@ -206,7 +206,7 @@ end
 def html_to_haml(source)
   begin
     html = open(source) {|input| input.binmode.read }
-    Haml::HTML.new(html, :erb => true, :xhtml => true).render
+    Html2haml.new(html, :erb => true, :xhtml => true).render
   rescue RubyParser::SyntaxError
     say_wizard "Ignoring RubyParser::SyntaxError"
     # special case to accommodate https://github.com/RailsApps/rails-composer/issues/55
@@ -215,7 +215,7 @@ def html_to_haml(source)
     say_wizard "applying patch" if html.include? 'card_year'
     html = html.gsub(/, {add_month_numbers: true}, {name: nil, id: "card_month"}/, '')
     html = html.gsub(/, {start_year: Date\.today\.year, end_year: Date\.today\.year\+10}, {name: nil, id: "card_year"}/, '')
-    result = Haml::HTML.new(html, :erb => true, :xhtml => true).render
+    result = Html2haml.new(html, :erb => true, :xhtml => true).render
     result = result.gsub(/select_month nil/, "select_month nil, {add_month_numbers: true}, {name: nil, id: \"card_month\"}")
     result = result.gsub(/select_year nil/, "select_year nil, {start_year: Date.today.year, end_year: Date.today.year+10}, {name: nil, id: \"card_year\"}")
   end
@@ -223,7 +223,7 @@ end
 
 def html_to_slim(source)
   html = open(source) {|input| input.binmode.read }
-  haml = Haml::HTML.new(html, :erb => true, :xhtml => true).render
+  haml = Html2haml.new(html, :erb => true, :xhtml => true).render
   Haml2Slim.convert!(haml)
 end
 
@@ -896,14 +896,14 @@ add_gem 'mysql2' if prefer :database, 'mysql'
 ## Template Engine
 if prefer :templates, 'haml'
   add_gem 'haml-rails'
-  add_gem 'html2haml', :group => :development
+  add_gem 'html2haml', :group => :development, :github => 'haml/html2haml'
 end
 if prefer :templates, 'slim'
   add_gem 'slim'
   add_gem 'haml2slim', :group => :development
   # Haml is needed for conversion of HTML to Slim
   add_gem 'haml-rails', :group => :development
-  add_gem 'html2haml', :group => :development
+  add_gem 'html2haml', :group => :development, :github => 'haml/html2haml'
 end
 
 ## Testing Framework
